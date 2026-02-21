@@ -1,0 +1,71 @@
+/* App Common Style */
+/* Body Message Dialog ... */
+
+body {
+	--scrollbar-width: calc(100vw - 100%);
+	
+	font-family: 'Roboto', 'Orbitron', sans-serif;
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+	overflow-y: visible !important;
+	overflow-x: hidden;
+	
+	main.app {
+		max-width: 100vw;
+		min-height: 100vh;
+		padding: 0;
+		margin: 0;
+		overflow-y: visible !important;
+		overflow-x: hidden;
+		
+		/* content-wrapper */
+		.content-wrapper {
+			position: relative;
+			width: calc(100vw - var(--scrollbar-width)); /* 避免scrollbar寬度影響 */
+			height: 100vh; 
+			overflow-y: visible !important;
+			overflow-x: hidden;
+		}
+	}
+	
+	
+	
+	
+	/* Loading bar */
+	/* .loading-wrapper {
+		width: 100%;
+		height: 4px;
+		border-radius: 1rem;
+		overflow: hidden;
+		
+		position: fixed;
+		top: calc(64px - 8px);
+		display: none;
+		z-index: 20;
+		
+		&.active {
+			display: block;
+		}
+	} */
+
+	/* .loading-bar {
+		width: 30%; 
+		height: 100%;
+		border-radius: 1rem;
+		background-color: rgba(128, 222, 234, .87);
+		position: absolute;
+		top: 0;
+		left: -30%;
+		animation: infinite-loading 2s linear infinite;
+	} */
+
+	@keyframes infinite-loading {
+		0% {
+			left: -30%; /* Starts off-screen left */
+		}
+		100% {
+			left: 100%; /* Moves across to off-screen right */
+		}
+	}
+}

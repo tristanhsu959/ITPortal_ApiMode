@@ -1,0 +1,14 @@
+/* JS */
+
+$(function(){
+	$('.btn-delete').click(function(e){
+		e.preventDefault();
+		let action = $(this).attr('href');
+		
+		let callback = function(){
+			$('#roleForm').attr('action', action).submit();
+		};
+		
+		showConfirmDialog('是否確認刪除?', callback);
+	});
+});

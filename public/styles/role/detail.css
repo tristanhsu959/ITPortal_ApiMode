@@ -1,0 +1,32 @@
+/* list */
+
+section.role-data {
+	margin: 1rem;
+	
+	/* Set field width */
+	.row .field {
+		width: 30%;
+	}
+	
+	
+	.role-permission {
+		--check-color: #ff9800;
+		
+		padding: 1rem;
+		margin-bottom: 1.5rem;
+		
+		ul {
+			border-radius: 0;
+			li {
+				border-width: 0;
+				border-bottom-width: 1px;
+				background-color: transparent;
+				
+				&:last-child {
+					border-bottom-width: 0;
+				}
+			}
+		}
+	}
+}
+

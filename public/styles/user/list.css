@@ -1,0 +1,34 @@
+/* User list */
+
+#searchForm {
+	position: relative;
+	overflow: visible !important;
+}
+/* User list */
+
+.page-nav {
+	--search-bg: #01579b;
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	width: 100%;
+	height: 64px;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	background-color: var(--search-bg);
+	border-bottom: 1px solid rgba(0 0 0 / .20);
+}
+
+.user-list {
+	padding: 0 1rem;
+	
+	.d-table {
+		--table-head-bg: #0288d1; 
+		--table-head-color: rgba(255 255 255 / .87); 
+		--table-row-border-color: var(--theme-divider-color);
+		--table-row-color: rgba(0 0 0 / .7);
+		--table-row-even-bg: hsla(199, 100%, 63%, .06);
+		--table-row-odd-bg: hsla(199, 100%, 63%, .12);
+	}
+}
+

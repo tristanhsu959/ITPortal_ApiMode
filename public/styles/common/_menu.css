@@ -1,0 +1,91 @@
+/* Aside Menu */
+nav.menu {
+	position: sticky;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: var(--menu-width);
+	height: 100vh;
+	background-color: var(--menu-bg);
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	
+	.header {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 64px;
+		font-family: 'Audiowide';
+		color: #fafafa;
+		font-size: 1.8rem;
+		font-weight: bold;
+		border-bottom: 1px solid rgba(0 0 0 / .20);
+		margin: 0;
+	}
+	
+	.responsive {
+		/*#00bcd4*/
+		--menu-color: rgba(0, 188, 212, .87); 
+		--menu-group-color: rgba(0, 188, 212, 1);  
+		--menu-hover-color: #80deea; /*200*/
+		
+		/* width: calc(100% - (var(--menu-width) - 100%)); 有scrollbar時 */
+		width: 100%;
+		/* height: calc(100vh - 64px - 1px); */
+		/* height: calc(100vh - 64px); */
+		padding: 0;
+		margin: 0;
+		/* padding-bottom: 1rem; */
+		/* box-sizing: border-box;
+		overflow-y: auto;
+		scrollbar-width: thin;
+		scrollbar-color: var(--menu-group-color) var(--menu-bg);  */
+		/* Two valid colors. The first applies to the thumb of the scrollbar, the second to the track. */
+		
+		ul {
+			--gap: calc( (var(--menu-width) - (64px * 4) - 2rem) / 3 );
+			
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+			gap: calc(var(--gap) * 2) var(--gap);
+			padding: 0 1rem;
+			
+			li {
+				width: 64px;
+				height: 64px;
+				list-style-type: none;
+				
+				&.w2 {
+					width: calc(64px * 2);
+					height: 64px;;
+				}
+				
+				a {
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					width: 100%;
+					height: 100%;
+					background-color: hsla(206, 99%, 21%, .85);
+					text-decoration: none;
+					color: #01579b;
+					font-size: .75rem;
+					
+					&:hover {
+						background-color: hsl(206, 99%, 41%);
+						color: #fafafa;
+					}
+					&.active {
+						background-color: #ff3b1e;
+						color: #fafafa;
+						
+					}
+				}
+			}
+		}
+	}
+}
