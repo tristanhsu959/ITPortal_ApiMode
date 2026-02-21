@@ -11,15 +11,8 @@ header.top-nav {
 	background-color: var(--nav-bg-color);
 	box-sizing: border-box;
 	
-	a.nav-back {
-		display: none;
-
-		i {
-			color: #fafafa;
-		}
-		&.show {
-			display: inline-flex;
-		}
+	a.nav-back i {
+		color: #fafafa;
 	}
 	
 	.nav-breadcrumb {

@@ -1,11 +1,16 @@
 /* Signin Style */
 body {
-	
-	main.signin {
-		min-height: 100vh;
+	min-height: 100vh;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+		
+	main {
 		display:flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		padding: 1rem;
 		
 		header {
 			margin-bottom: 2rem;
@@ -71,12 +76,12 @@ body {
 				margin-block-start: .5rem;
 				gap: 0;
 				
-				#btnSignin {
+				.btn-login {
 					--_round: .125rem 0 0 .125rem;
 					border-radius: var(--_round);
 					background-color: #f44336;
 				}
-				#btnReset {
+				.btn-reset {
 					--_round: 0 .125rem .125rem 0;
 					border-radius: var(--_round);
 					background-color: #000;
@@ -114,62 +119,4 @@ body {
 			}
 		}
 	}
-	/* main.signin {
-		width: calc(100% / 4);
-		height: 100vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-				
-		
-		
-		
-
-		
-		
-	} */
 }
-
-/* @media (max-width: 1536px) { 
-	body main.signin {
-		width: calc(100% / 3); 
-	}
-}
-/* XX-Large devices (larger desktops, 1400px and up) *
-@media (max-width: 1400px) { 
-	body main.signin {
-		width: calc(100% / 3); 
-	}
-}
-/* X-Large devices (large desktops, 1200px and up) *
-@media (max-width: 1200px) { 
-	body main.signin {
-		width: calc(100% / 3); 
-	}
-}
-/* Large devices (desktops, 992px and up) *
-@media (max-width: 992px) { 
-	body main.signin {
-		width: calc(100% / 2); 
-	}
-}
-/* Medium devices (tablets, 768px and up) *
-@media (max-width: 768px) { 
-	body main.signin {
-		width: calc(100% / 2); 
-	}
-}
-@media (max-width: 576px) { 
-	body main.signin {
-		width: 100%; 
-	}
-} */
-
-
-
-
-
-
-
-

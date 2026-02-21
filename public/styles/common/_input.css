@@ -51,6 +51,7 @@
 	i { color: var(--primary); }
 	
 	&:has(input:not(:placeholder-shown)) label,
+	&:has(textarea:not(:placeholder-shown)) label,
 	&:has(select:not(:invalid)) label {
 		color: var(--primary);
 	}

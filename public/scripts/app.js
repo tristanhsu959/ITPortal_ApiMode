@@ -1,130 +1,97 @@
-/* Common JS */
+/* App JS */
 
-$(function(){
-	//擋右鍵
-	$(document).on('contextmenu', function(e){
-		e.preventDefault();
-	});
-	
-	hasToast();
-	initializeMenu();
-	initializeEvents();
-});
+window.app = {
+	init(msg) {
+		if (! util.isEmpty(msg))
+			util.notify(msg);
+	},
+	actionBar(initData) {
+		return {
+			breadcrumb: initData.breadcrumb,
+			backUrl: initData.backUrl,
+			showBack: (initData.backUrl) ? true : false,
+			isHome: initData.isHome,
+		}
+	},
+	profile(initData) {
+		return {
+			displayName: initData.displayName,
+			company: initData.adCompany,
+			department: initData.adDepartment,
+			employeeId: initData.adEmployeeId,	 
+			mail: initData.adMail, 		 
+		}
+    },
+	chgPassword(initData) {
+		return {
+			formData: {
+				userId: initData.userId,
+				oldPassword: '',
+				newPassword: '',
+				confirmPassword: '',
+			},
+			userName: initData.userName,
+			apiUrl: initData.apiUrl,
+			errors: new Set(),
+			isLoading: false,
 
-function test() {alert(123);};
-/*** Initialize ***/
-function initializeMenu()
-{
-	/* Menu */
-	$('.menu .menu-group').each(function($item, $key){
-		$(this).find('a.list-title').removeClass('active');
+			async submit() {
+				try 
+				{
+					this.errors.clear();
+					
+					if (util.isEmpty(this.formData.oldPassword))
+						this.errors.add('oldPassword');
+					if (util.isEmpty(this.formData.newPassword))
+						this.errors.add('newPassword');
+					if (util.isEmpty(this.formData.confirmPassword))
+						this.errors.add('confirmPassword');
+					
+					if (this.errors.size > 0)
+						return false;
+					
+					if (! util.isPasswordFormat(this.formData.newPassword))
+					{
+						this.errors.add('newPassword');
+						util.notify('新密碼格式錯誤');
+					}
+					
+					if (this.formData.newPassword != this.formData.confirmPassword)
+					{
+						this.errors.add('confirmPassword');
+						util.notify('新密碼與確認密碼輸入不符');
+					}
+					
+					if (this.errors.size > 0)
+						return false;
+					
+					const response = await axios.put(this.apiUrl, this.formData);
+						
+					if (response.data.status === true)
+					{
+						util.notify('密碼設定完成，已啟用系統驗證登入模式');
+						this.reset();
+					}
+					else
+						util.notify(response.data.msg);
+				} 
+				catch (e) 
+				{
+					console.error("API change password 呼叫失敗", e);
+				} 
+				finally 
+				{
+					this.isLoading = false;
+				}
+			},
 		
-		$(this).find('.list-group li a').each(function($item, $key){
-			if ($(this).hasClass('active'))
-			{
-				$(this).closest('.collapse').collapse('show');
-				$(this).closest('.menu-group').find('a.list-title').addClass('active');
+			async reset() {
+				this.formData.oldPassword = '';
+				this.formData.newPassword = '';
+				this.formData.confirmPassword = '';
+				this.errors.clear();
+				this.isLoading = false;
 			}
-		});
-	});
-	
-	$('.menu .menu-group .list-group-item a').click(function(){
-		$('#loading').addClass('active');
-	});
+		}
+    }
 }
-
-function initializeEvents()
-{
-	$('#btnReset').click(function(){
-		$(this).closest('form').get(0).reset();
-	});
-	
-	/* Remove invalid style */
-	$('.field input').on('keypress', function(event){
-		$(this).closest('.field').removeClass('invalid');
-	});
-	
-	/* var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-		return new bootstrap.Tooltip(tooltipTriggerEl)
-	}) */
-}
-/*** Initialize End ***/
-
-/* valid or invalid */
-function validateForm(fields, invalidStyle)
-{
-	//el: id/class/ or ....
-	if ($.isArray(fields))
-	{
-		let result = true;
-		
-		$.each(fields, function(key, el){
-			result = result & validateInput(el, invalidStyle);
-		});
-		
-		return Boolean(result);
-	}
-	else
-		return validateInput(fields, invalidStyle);
-}
-
-function validateInput(el, invalidStyle)
-{
-	invalidStyle = invalidStyle || false;
-	
-	if (invalidStyle)
-		$(el).closest('.field').removeClass('invalid');
-	
-	if ($(el).val() == '' || typeof $(el).val() == 'undefined')
-	{
-		if (invalidStyle)
-			$(el).closest('.field').addClass('invalid');
-		return false;
-	}
-	else
-		return true;
-}
-
-//Called by backend
-function hasToast()
-{
-	if ($.trim($('#msg .message').html()) != '')
-		showToast($('#msg .message').html());
-}
-
-//Called by js
-function showToast(msg)
-{
-	msg = msg || '';
-	
-	if (msg != '')
-	{
-		$('#msg .message').html(msg);
-		ui('#msg', 3000);
-		
-		$('#msg .btn-close').off('click').click(function(){
-			$('#msg').removeClass('active');
-		});
-	}
-}
-
-/* Dialog */
-function showAlertDialog(desc)
-{
-	$('#alertModal .message').text(desc);
-	ui('#alertModal');
-}
-
-function showConfirmDialog(desc, callback)
-{
-	$('#confirmModal .message').text(desc);
-	/* 須用on event模式 */
-	$('#confirmModal .btn-confirm').off('click').on('click', function(){
-		callback();
-		ui('#confirmModal');
-	});
-	
-	ui('#confirmModal');
-}
-

@@ -1,0 +1,16 @@
+/* Product list */
+
+.group-list {
+	ul li {
+		position: relative;
+		
+		button {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: .5rem 1rem;
+		}
+	}
+	
+}
+

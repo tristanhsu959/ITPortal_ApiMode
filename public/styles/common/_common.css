@@ -1,9 +1,9 @@
 /* Web Common Style */
 
 /* Toast Message */
-#msg {
+#notifyMsg {
 	--error: #f44336;
-	width: 25%;
+	width: 35%;
 	display: flex;
 	justify-content: space-between;
 	a i {

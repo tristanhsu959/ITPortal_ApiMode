@@ -31,18 +31,9 @@ nav.menu {
 		--menu-group-color: rgba(0, 188, 212, 1);  
 		--menu-hover-color: #80deea; /*200*/
 		
-		/* width: calc(100% - (var(--menu-width) - 100%)); 有scrollbar時 */
 		width: 100%;
-		/* height: calc(100vh - 64px - 1px); */
-		/* height: calc(100vh - 64px); */
 		padding: 0;
 		margin: 0;
-		/* padding-bottom: 1rem; */
-		/* box-sizing: border-box;
-		overflow-y: auto;
-		scrollbar-width: thin;
-		scrollbar-color: var(--menu-group-color) var(--menu-bg);  */
-		/* Two valid colors. The first applies to the thumb of the scrollbar, the second to the track. */
 		
 		ul {
 			--gap: calc( (var(--menu-width) - (64px * 4) - 2rem) / 3 );
@@ -59,7 +50,7 @@ nav.menu {
 				list-style-type: none;
 				
 				&.w2 {
-					width: calc(64px * 2);
+					width: calc(64px * 2 + var(--gap));
 					height: 64px;;
 				}
 				

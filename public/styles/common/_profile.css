@@ -13,6 +13,7 @@
 		}
 		
 		.info-head {
+			position: relative;
 			min-height: 168px;
 			display: flex;
 			flex-direction: column;
@@ -43,6 +44,12 @@
 					font-weight: 500;
 				}
 			}
+			
+			.btn-chg-password {
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
 		}
 		/* Info list */
 		.info-body {
@@ -55,7 +62,7 @@
 		}
 	}
 	
-	a.btn-signout {
+	a.btn-logout {
 		position: absolute;
 		bottom: 2rem;
 		left: 50%;

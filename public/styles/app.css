@@ -1,5 +1,5 @@
 /* App Common Style */
-/* Body Message Dialog ... */
+/* 不與Login共用 */
 
 body {
 	--scrollbar-width: calc(100vw - 100%);
@@ -26,46 +26,20 @@ body {
 			height: 100vh; 
 			overflow-y: visible !important;
 			overflow-x: hidden;
-		}
-	}
-	
-	
-	
-	
-	/* Loading bar */
-	/* .loading-wrapper {
-		width: 100%;
-		height: 4px;
-		border-radius: 1rem;
-		overflow: hidden;
-		
-		position: fixed;
-		top: calc(64px - 8px);
-		display: none;
-		z-index: 20;
-		
-		&.active {
-			display: block;
-		}
-	} */
-
-	/* .loading-bar {
-		width: 30%; 
-		height: 100%;
-		border-radius: 1rem;
-		background-color: rgba(128, 222, 234, .87);
-		position: absolute;
-		top: 0;
-		left: -30%;
-		animation: infinite-loading 2s linear infinite;
-	} */
-
-	@keyframes infinite-loading {
-		0% {
-			left: -30%; /* Starts off-screen left */
-		}
-		100% {
-			left: 100%; /* Moves across to off-screen right */
+			
+			/* Default style */
+			.page-nav {
+				--search-bg: #01579b;
+				position: sticky;
+				top: 0;
+				z-index: 20;
+				width: 100%;
+				height: 64px;
+				padding-left: 1rem;
+				padding-right: 1rem;
+				background-color: var(--search-bg);
+				border-bottom: 1px solid rgba(0 0 0 / .20);
+			}
 		}
 	}
 }
