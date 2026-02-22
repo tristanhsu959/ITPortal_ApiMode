@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CurrentUser;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
@@ -9,205 +10,107 @@ use Exception;
 
 class AppService
 {
+	const SESS_AUTH_USER = 'Sess:AuthUser';
+	const SESS_AUTH_MENU = 'Sess:AuthMenu';
+	
 	public function __construct()
 	{
 	}
 	
-	/* 登入驗證主流程
-	 * @params: string
-	 * @params: string
-	 * @params: int
-	 * @return: array
-	 */
-	public function login($account, $password, $authType)
-	{
-		try
-		{
-			#1. Clear old auth session : CurrentUserTrait
-			$this->removeCurrentUser();
-			
-			#2. auth by AD
-			$adInfo = [];
-			if ($authType == AuthType::AD->value)
-				$adInfo = $this->_authByAD($account, $password);
-			
-			#3. auth DB account register (AD or System auth)
-			$userInfo = $this->_authRegister($account);
-			
-			#4. auth password
-			if ($authType == AuthType::SYSTEM->value)
-				$this->_authPassword($userInfo['userPassword'], $password);
-			
-			#5. auth status
-			if ($authType == AuthType::SYSTEM->value)
-				$this->_authStatus($userInfo['isActive']);
-			
-			#6. Save to session
-			$this->saveCurrentUser($adInfo, $userInfo);
-			
-			#7. Sync Ad info to DB
-			$this->_repository->syncAdInfo($userInfo['userId'], $adInfo);
-			
-			return ResponseLib::initialize()->success();
-		}
-		catch(Exception $e)
-		{
-			Log::channel('appServiceLog')->error($e->getMessage(), [ __class__, __function__, __line__]);
-			return ResponseLib::initialize()->fail($e->getMessage());
-		}
-	}
-	
-	/* AD登入驗證
-	 * @params: string
-	 * @params: string
-	 * @params: int
-	 * @return: array
-	 */
-	public function _authByAD($account, $password)
-	{
-		/*return [
-				"company" => "八方雲集國際股份有限公司",
-				"department" => "資訊處",
-				"title" => "Machine #9",
-				"displayName" => "Akh",
-				"employeeId" => "T9099999",
-				"name" => "Akh",
-				"mail" => "machine.akh@8way.com.tw",
-			];*/
-			
-		#C:\openldap\sysconf\ldap.conf for local dev
-		#無法匿名連線(除LDAP外)
-		
-		$result = [];
-		
-		$domain = config('web.auth.domain');
-		$connectionConfig = config('web.auth.ad');
-		#必須是Distinquished Name:cn= , base dn
-		$connectionConfig['username'] = "{$account}@{$domain}"; //"cn={$account},{$connectionConfig['base_dn']}"; 
-		$connectionConfig['password'] = $password;
-		
-		#因exception不同, 故加try catch
-		try 
-		{
-			$connection = new Connection($connectionConfig);
-			$connection->connect();
-			
-			/*
-			"CN=林 XX,OU=T16000 資訊處,OU=8way_a00 八方雲集國際股份有限公司,OU=八方雲集國際股份有限公司,DC=8way,DC=com,DC=tw"
-			cn=中文名, title, ou, displayname=英+中, memof, company, department, employeeid, samaccountname, mail, mobile
-			*/
-			$result = $connection->query()->where('samaccountname', '=', $account)->first();
-			
-			#只取需要的資訊
-			$adInfo['company'] 		= data_get($result, 'company.0', '');
-			$adInfo['department'] 	= data_get($result, 'department.0', '');
-			$adInfo['title'] 		= data_get($result, 'title.0', '');
-			$adInfo['displayName'] 	= data_get($result, 'displayname.0', ''); #=>FirstName LastName CNName
-			$adInfo['employeeId'] 	= data_get($result, 'employeeid.0', ''); #=>CNName
-			$adInfo['name'] 		= Str::remove(' ', data_get($result, 'name.0', '')); #=>CNName
-			$adInfo['mail'] 		= data_get($result, 'mail.0', '');
-			
-			return $adInfo;
-		} 
-		catch (\LdapRecord\Auth\BindException $e) 
-		{
-			$msg = 'AD Error：?|?|?|?';
-			$msg = Str::replaceArray('?', [
-				$e->getDetailedError()->getErrorCode(),
-				$e->getMessage(), 
-				$e->getDetailedError()->getErrorMessage(),
-				$e->getDetailedError()->getDiagnosticMessage()
-			], $msg);
-			
-			#AD單獨記錄Log
-			Log::channel('appServiceLog')->error($msg, [ __class__, __function__, __line__]);
-			
-			throw new Exception('登入失敗，AD帳號或密碼錯誤');
-		}
-	}
-	
-	/* 驗證帳號註冊
-	 * @params: string
-	 * @params: string
-	 * @params: int
-	 * @return: mixed
-	 */
-	private function _authRegister($account)
-	{
-		$userInfo = $this->_repository->getUserByAccount($account);
-		
-		if (empty($userInfo))
-			throw new Exception('登入失敗，此帳號尚未在系統註冊');
-		
-		
-		return $userInfo;
-	}
-	
-	/* 驗證系統密碼
-	 * @params: string
-	 * @params: string
-	 * @params: int
-	 * @return: mixed
-	 */
-	private function _authPassword($currentPassword, $password)
-	{
-		if (Hash::check($password, $currentPassword) == FALSE)
-			throw new Exception('登入失敗，系統驗證密碼錯誤');
-		
-		return TRUE;
-	}
-	
-	/* 驗證帳號狀態
-	 * @params: string
-	 * @params: string
-	 * @params: int
-	 * @return: mixed
-	 */
-	private function _authStatus($status)
-	{
-		if ($status == Status::INACTIVE->value)
-			throw new Exception('登入失敗，此帳號已停用，請洽系統管理員');
-		
-		return TRUE;
-	}
-	
-	/* 登出
+	/* 清除登入資訊|Menu
 	 * @params: 
 	 * @return: boolean
 	 */
-	public function logout()
+	public function removeCurrentUser()
 	{
-		$currentUser = $this->getCurrentUser(); 
-		$this->removeCurrentUser();
-		$logUser = data_get($currentUser, 'userAd', '');
+		session()->forget(self::SESS_AUTH_USER);
+		session()->forget(self::SESS_AUTH_MENU);
 		
-		Log::channel('appServiceLog')->info("{$logUser} 使用者登出系統", [ __class__, __function__, __line__]);
-			
 		return TRUE;
 	}
 	
-	/* Set password
-	 * @params: 
+	/* 儲存登入資訊
+	 * @params: array
+	 * @params: array
 	 * @return: boolean
 	 */
-	public function setPassword($userId, $oldPassword, $newPassword)
+	public function saveCurrentUser($adInfo, $userInfo)
 	{
-		try
+		$currentUser = new CurrentUser($adInfo, $userInfo);
+		session()->put(self::SESS_AUTH_USER, $currentUser);
+		
+		return TRUE;
+	}
+	
+	/* Get current user
+	 * @params: 
+	 * @return: array
+	 */
+	public function getCurrentUser()
+	{
+		if (session()->missing(self::SESS_AUTH_USER))
+			return FALSE;
+		
+		return session()->get(self::SESS_AUTH_USER);
+	}
+	
+	/* 取已授權的Menu (登入驗後)
+	 * @params: 
+	 * @return: array
+	 */
+	public function getAuthMenu()
+	{
+		$authMenu = [];
+		
+		#1.若有取過, 直接取Session
+		if (session()->has(self::SESS_AUTH_MENU))
+			return session()->get(self::SESS_AUTH_MENU);
+		
+		#2.取目前登入使用者
+		$currentUser = $this->getCurrentUser();
+		
+		if ($currentUser === FALSE)
+			return $authMenu;
+		
+		#3.取功能選單設定檔
+		$menuConfig = $this->getMenu();
+		
+		#4.驗證使用者有權限的選單, 只要驗證到功能即可
+		$permissions = $currentUser->getPermissions();
+		
+		$authMenu =  Arr::only($menuConfig, $permissions);
+		session()->put(self::SESS_AUTH_MENU, $authMenu);
+		
+		return $authMenu;
+	}
+	
+	/* Menu with items
+	 * @params: 
+	 * @return: array
+	 */
+	public function getMenu()
+	{
+		$menu = [];
+		$enabled 	= config('web.menu.enabled');
+		$available 	= config('web.menu.available');
+		
+		foreach($enabled as $itemKey)
 		{
-			$currentUser = $this->getCurrentUser(); 
+			$item = data_get($available, $itemKey, NULL);
 			
-			if (Hash::check($oldPassword, $currentUser->userPassword) == FALSE)
-				throw new Exception('密碼設定失敗，舊密碼驗證錯誤');
-			
-			$hashPassword = Hash::make($newPassword);
-			$this->_repository->setPassword($userId, $hashPassword);
-			
-			return ResponseLib::initialize()->success('密碼設定完成');
+			if (! empty($item))
+				$menu[$itemKey] = $item;
 		}
-		catch(Exception $e)
-		{
-			Log::channel('appServiceLog')->error($e->getMessage(), [ __class__, __function__, __line__]);
-			return ResponseLib::initialize()->fail($e->getMessage());
-		}
+		
+		return $menu;
+	}
+	
+	/* Enabled menu keys
+	 * @params: 
+	 * @return: array
+	 */
+	public function getEnabledMenuKeys()
+	{
+		return config('web.menu.enabled');
 	}
 }
