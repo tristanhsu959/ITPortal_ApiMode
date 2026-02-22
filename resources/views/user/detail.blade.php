@@ -32,7 +32,7 @@
 				<input type="password" id="password" name="password" value="" maxlength="15" data-bs-toggle="tooltip" data-bs-placement="top" title="數字+英文，六個字元以上">
 				<label>系統驗證密碼</label>
 				<button type="button" class="button circle transparent small btn-view-pwd"></button>
-				<output>系統驗證登入模式：AD帳號+系統密碼</output>
+				<span class="tooltip">系統驗證登入模式：設定完成<br/>可使用［AD帳號+系統密碼］登入</span>
 			</div>
 			<button type="button" class="button btn-generate-pwd">產生密碼</button>
 			

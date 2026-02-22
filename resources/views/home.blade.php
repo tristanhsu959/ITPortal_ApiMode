@@ -8,4 +8,4 @@
     <script src=""></script>
 @endpush
 
-@section('content', '')
+@section('content', 'Welcome')

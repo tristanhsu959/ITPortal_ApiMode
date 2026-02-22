@@ -1,22 +1,29 @@
 /* Login JS */
 
-window.loginInit = function(initial = []) 
-{
-    return {
-        formData: initial.formData,
-		authUrl: initial.authUrl,
-		homeUrl: initial.homeUrl,
+document.addEventListener('alpine:init', () => {
+    Alpine.data('login', () => ({
+		formData: {
+			account: '',
+			password: '',
+			authType: 1
+		},
+		authUrl: '/login',
+		homeUrl: '/home',
 		errors: new Set(),
 		isLoading: false,
-
-        async submit() {
+		
+        init() {
+			
+        },
+		
+		async submit() {
 			try 
 			{
 				this.errors.clear();
 				
-				if (util.isEmpty(this.formData.account))
+				if (Helper.isEmpty(this.formData.account))
 					this.errors.add('account');
-				if (util.isEmpty(this.formData.password))
+				if (Helper.isEmpty(this.formData.password))
 					this.errors.add('password');
 				
 				if (this.errors.size == 0)
@@ -26,20 +33,20 @@ window.loginInit = function(initial = [])
 					if (response.data.status === true)
 						window.location.href = this.homeUrl;
 					else
-						util.notify(response.data.msg);
+						Alpine.store('toast').notify(response.data.msg);
 				}
 				else
 					return false;
-            } 
+			} 
 			catch (e) 
 			{
-                console.error("API呼叫失敗", e);
-            } 
+				Alpine.store('toast').notify("API呼叫失敗", e);
+			} 
 			finally 
 			{
-                this.isLoading = false;
-            }
-        },
+				this.isLoading = false;
+			}
+		},
 		
 		async reset() {
 			this.formData.account = '';
@@ -48,5 +55,5 @@ window.loginInit = function(initial = [])
 			this.errors.clear();
 			this.isLoading = false;
 		}
-    }
-}
+    }));
+});

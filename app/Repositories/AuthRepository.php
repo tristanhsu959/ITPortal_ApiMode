@@ -27,10 +27,16 @@ class AuthRepository extends Repository
 		{
 			$db = $this->connectItPortal('user');
 				
-			$result = $db->select('userId', 'userAd', 'userPassword', 'userRoleId', 'isActive', 'roleGroup', 'rolePermission')
+			$result = $db->select('userId', 'userAd', 'userPassword', 'userRoleId', 'isActive')
+						->addSelect('roleGroup', 'rolePermission')
+						->addSelect('adCompany', 'adDepartment', 'adEmployeeId', 'adDisplayName', 'adMail')
 						->join('role', 'roleId', '=', 'userRoleId')
+						->leftJoin('user_ad_info', 'adUserId', '=', 'userId')
 						->where('userAd', '=', $account)
 						->get()->first();
+			
+			if ($result)
+				$result['rolePermission'] = json_decode($result['rolePermission']);
 			
 			return $result;
 		}
@@ -74,6 +80,30 @@ class AuthRepository extends Repository
 			$db = $this->connectItPortal('user_ad_info');
 			$result = $db->updateOrInsert(['adUserId' => $userId], $data);
 					
+			return TRUE;
+		}
+		catch(Exception $e)
+		{
+			Log::channel('appServiceLog')->error($e->getMessage(), [ __class__, __function__, __line__]);
+			return FALSE;
+		}
+	}
+	
+	/* Set passwordd
+	 * @params: int
+	 * @params: string
+	 * @return: boolean
+	 */
+	public function setPassword($userId, $hashPassword)
+	{
+		try
+		{
+			$db = $this->connectItPortal('user');
+			
+			$data['userPassword']	= $hashPassword;
+			$data['updateAt'] 		= now()->format('Y-m-d H:i:s');
+			
+			$db->where('userId', '=', $userId)->update($data);			
 			return TRUE;
 		}
 		catch(Exception $e)

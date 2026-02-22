@@ -1,6 +1,4 @@
 @extends('layouts.app')
-@use('App\Enums\RoleGroup')
-@use('App\Enums\Operation')
 
 @push('styles')
 	<link href="{{ asset('styles/role/detail.css') }}" rel="stylesheet">

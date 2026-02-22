@@ -18,9 +18,9 @@ class HomeController extends Controller
 	
 	public function index(Request $request)
 	{
-		$this->_viewModel->action = FormAction::HOME;
+		//$this->_viewModel->action = FormAction::HOME;
 		
-		return view('home')->with('viewModel', $this->_viewModel);
+		return view('home');
 	}
 	
 }

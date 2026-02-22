@@ -2,25 +2,14 @@
 
 namespace App\Services;
 
-use App\Repositories\AuthRepository;
-use App\Libraries\ResponseLib;
-use App\Traits\AuthTrait;
-use App\Enums\AuthType;
-use App\Enums\Status;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Exception;
-use LdapRecord\Connection;
-use LdapRecord\Query\Filter\Parser;
-use Illuminate\Support\Facades\Hash;
 
-class AuthService
+class AppService
 {
-	use AuthTrait;
-	
-	public function __construct(protected AuthRepository $_repository)
+	public function __construct()
 	{
 	}
 	

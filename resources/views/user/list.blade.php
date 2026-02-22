@@ -85,7 +85,7 @@
 				</div>
 				<div class="d-table-cell">{{ $user['roleName'] }}</div>
 				<!--div class="d-table-cell">{{ $user['adMail'] }}</div-->
-				<div class="d-table-cell cell-status {{ $viewModel->getActiveStyle($user['isActive']) }}"></div>
+				<div class="d-table-cell cell-status {{ $viewModel->getStatusStyle($user['isActive']) }}"></div>
 				<div class="d-table-cell cell-date">{{ $user['updateAt'] }}</div>
 				<div class="d-table-cell cell-action">
 					<a href="{{ route('user.update.get', [$user['userId']]) }}" class="btn-edit button circle small" @disabled(! $viewModel->canEditThisUser($user['roleGroup']))>

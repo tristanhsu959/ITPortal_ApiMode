@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\AuthService;
-use App\ViewModels\AuthViewModel;
 use App\Libraries\ResponseLib;
 use App\Enums\FormAction;
 use Illuminate\Http\Request;
@@ -12,32 +11,31 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-	public function __construct(protected AuthService $_service, protected AuthViewModel $_viewModel)
+	public function __construct(protected AuthService $_service)
 	{
 	}
 	
-	/* Signin view
+	/* Login view
 	 * @params: request
 	 * @return: view
 	 */
-	public function showSignin()
+	public function index()
 	{
-		$this->_viewModel->action = FormAction::SIGNIN;
-		return view('signin')->with('viewModel', $this->_viewModel);
+		return view('login');
 	}
 	
 	/* 登入驗證
 	 * @params: request
 	 * @return: view
 	 */
-	public function signin(Request $request)
+	public function login(Request $request)
 	{
+		if (! $request->ajax())
+			return response()->json(ResponseLib::initialize()->fail('Access Denied')->get());
+		
 		$account 	= $request->input('account');
 		$password	= $request->input('password');
 		$authType 	= $request->input('authType');
-		
-		$this->_viewModel->action = FormAction::SIGNIN;
-		$this->_viewModel->keepFormData($account, $authType); #account only
 		
 		$validator = Validator::make($request->all(), [
             'account' => 'required|max:20',
@@ -46,32 +44,50 @@ class AuthController extends Controller
         ]);
  
         if ($validator->fails())
-		{
-			$this->_viewModel->fail('登入失敗，帳號或密碼空白');
-			return view('signin')->with('viewModel', $this->_viewModel);
-		}
+			return response()->json(ResponseLib::initialize()->fail('登入失敗，帳號或密碼空白')->get());
 		
-		$response = $this->_service->signin($account, $password, $authType);
+		$response = $this->_service->login($account, $password, $authType);
 		
-		if ($response->status === FALSE)
-		{
-			$this->_viewModel->fail($response->msg);
-			return view('signin')->with('viewModel', $this->_viewModel);
-		}
-		else
-			return redirect('home');
+		return response()->json($response->get());
 	}
 	
-	/* Signout
+	/* Logout
 	 * @params: request
 	 * @return: view
 	 */
-	public function signout(Request $request)
+	public function logout(Request $request)
 	{
-		$this->_viewModel->action = FormAction::SIGNIN;
-		$this->_service->signout();
+		$this->_service->logout();
 		
-		return view('signin')->with('viewModel', $this->_viewModel);
+		return view('login');
+	}
+	
+	/* Setting password
+	 * @params: request
+	 * @return: view
+	 */
+	public function changePassword(Request $request)
+	{
+		if (! $request->ajax())
+			return response()->json(ResponseLib::initialize()->fail('Access Denied')->get());
+		
+		$userId 		= $request->input('userId');
+		$oldPassword 	= $request->input('oldPassword');
+		$newPassword	= $request->input('newPassword');
+		$confirmPassword= $request->input('confirmPassword');
+		
+		$validator = Validator::make($request->all(), [
+			'userId' 		=> 'required',
+            'oldPassword' 	=> 'required|max:20',
+			'newPassword' 	=> 'required|max:20',
+        ]);
+ 
+        if ($validator->fails())
+			return response()->json(ResponseLib::initialize()->fail('密碼設定失敗，參數驗證錯誤')->get());
+		
+		$response = $this->_service->setPassword($userId, $oldPassword, $newPassword);
+		
+		return response()->json($response->get());
 	}
 	
 }

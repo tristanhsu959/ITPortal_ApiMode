@@ -20,10 +20,10 @@ class AccessPermissionMiddleware
 		$currentUser = $this->getCurrentUser();
 		
 		if (empty($currentUser)) #fetch msg by : session('msg')
-			return redirect()->route('signin')->with('msg', '認證已過期，請重新登入');
+			return redirect()->route('login')->with('msg', '認證已過期，請重新登入');
 		
-		if (empty($currentUser->rolePermission) && ! $this->isSupervisor())
-			return redirect()->route('signin')->with('msg', '使用者尚無系統授權');
+		if (empty($currentUser->rolePermission) && ! $currentUser->isSupervisor())
+			return redirect()->route('login')->with('msg', '使用者尚無系統授權');
 		
         return $next($request);
     }
